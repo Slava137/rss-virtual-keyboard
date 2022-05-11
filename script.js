@@ -1,5 +1,12 @@
 import simbols from './simbols.js';
-alert (`Извините, но я ещё не успел доделать этот таск!!\nПрошу по возможности проверить работу в последний день или\n оставить в комментариях к проверке свой discord для связи. \nКак только я доделаю достаточно функционал, я вам напишу. \nА пока можете расслабиться и выпить чашечку чая :) Заранее спасибо`)
+// alert (`Извините, но я ещё не успел доделать этот таск!!\nПрошу по возможности проверить работу в последний день или\n оставить в комментариях к проверке свой discord для связи. \nКак только я доделаю достаточно функционал, я вам напишу. \nА пока можете расслабиться и выпить чашечку чая :) Заранее спасибо`)
+
+let lang =  localStorage.getItem('lang') || 'en';
+
+function setLocalStorage() {
+    localStorage.setItem('lang', lang);
+};
+window.addEventListener('beforeunload', setLocalStorage);
 
 const body = document.querySelector('body');
 let container = document.createElement('div');
@@ -30,11 +37,10 @@ container.append(remark);
 
 
 function addButtons() {
-
     for (let i = 0; i < simbols.en.length; i++) {        
         let button = document.createElement('button');
         button.classList.add('button__keyboard');     
-        button.innerHTML = simbols.en[i].small;
+        button.innerHTML = valueButton(i);
 
         if (button.innerHTML === 'Backspace' || button.innerHTML === 'CapsLock' || button.innerHTML === 'Tab' || button.innerHTML === 'Enter' ||  button.innerHTML === 'Shift' ||  button.innerHTML === 'Ctrl' ) {
             button.classList.add('button__keyboard_wide');
@@ -46,4 +52,39 @@ function addButtons() {
 
         keyboard.append(button);
         }
-}
+};
+
+function valueButton(i) {
+    if (lang === 'en') {        
+        return simbols.en[i].key;
+    } else {
+        return simbols.ru[i].key;
+    };
+};
+
+function toggleLang() {
+    if (lang === 'en') {
+      lang = 'ru';
+    } else {
+      lang = 'en';
+    };
+    localStorage.setItem('lang', lang);
+};
+
+function restart() {
+    let buttons = document.querySelectorAll('button');
+    for (let i = 0; i < simbols.en.length; i++) {
+      buttons[i].innerHTML = valueButton(i);
+    };
+};
+
+document.addEventListener('keydown', (event) => {
+    const textarea = document.querySelector('textarea');
+    textarea.focus();
+
+    const buttons = document.querySelector('keyboard');
+    if ((event.code === 'ShiftLeft' && event.altKey) || (event.code === 'AltLeft' && event.shiftKey)) {
+        toggleLang();
+        restart();
+    };
+});
