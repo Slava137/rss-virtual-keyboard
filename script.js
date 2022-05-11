@@ -1,5 +1,12 @@
 import simbols from './simbols.js';
-alert (`Извините, но я ещё не успел доделать этот таск!!\nПрошу по возможности проверить работу в последний день или\n оставить в комментариях к проверке свой discord для связи. \nКак только я доделаю достаточно функционал, я вам напишу. \nА пока можете расслабиться и выпить чашечку чая :) Заранее спасибо`)
+alert (`Извините, но я ещё не успел всё доделать!!\nПрошу по возможности проверить работу ближе к концу дня:) Заранее спасибо`)
+
+let lang =  localStorage.getItem('lang') || 'en';
+
+function setLocalStorage() {
+    localStorage.setItem('lang', lang);
+};
+window.addEventListener('beforeunload', setLocalStorage);
 
 const body = document.querySelector('body');
 let container = document.createElement('div');
@@ -17,6 +24,8 @@ container.append(textarea);
 let keyboard = document.createElement('div');
 keyboard.classList.add('keyboard');
 container.append(keyboard);
+let shiftValue = false;
+let capsLockValue = false;
 addButtons();
 
 let manual = document.createElement('p');
@@ -30,11 +39,11 @@ container.append(remark);
 
 
 function addButtons() {
-
     for (let i = 0; i < simbols.en.length; i++) {        
         let button = document.createElement('button');
-        button.classList.add('button__keyboard');     
-        button.innerHTML = simbols.en[i].small;
+        button.classList.add('button__keyboard');  
+        button.setAttribute('data-code', simbols.en[i].code);   
+        button.innerHTML = valueButton(i);
 
         if (button.innerHTML === 'Backspace' || button.innerHTML === 'CapsLock' || button.innerHTML === 'Tab' || button.innerHTML === 'Enter' ||  button.innerHTML === 'Shift' ||  button.innerHTML === 'Ctrl' ) {
             button.classList.add('button__keyboard_wide');
@@ -46,4 +55,95 @@ function addButtons() {
 
         keyboard.append(button);
         }
-}
+};
+
+function valueButton(i) {
+    if (lang === 'en') {  
+        if (shiftValue === true || capsLockValue === true) {
+            return simbols.en[i].shift;
+        };   
+        return simbols.en[i].key;
+    } else {
+        if (shiftValue === true || capsLockValue === true) {
+            return simbols.ru[i].shift;
+        };  
+        return simbols.ru[i].key;
+    };
+};
+
+function toggleLang() {
+    if (lang === 'en') {
+      lang = 'ru';
+    } else {
+      lang = 'en';
+    };
+    localStorage.setItem('lang', lang);
+};
+
+function restart() {
+    let buttons = document.querySelectorAll('button');
+    for (let i = 0; i < simbols.en.length; i++) {
+      buttons[i].innerHTML = valueButton(i);
+    };
+};
+
+
+document.addEventListener('keydown', (event) => {
+    const textarea = document.querySelector('.textarea');
+    textarea.focus();
+    
+    let buttonActive = document.querySelector(`.button__keyboard[data-code=${event.code}]`);
+    buttonActive.classList.add('active');    
+
+    if ((event.code === 'ShiftLeft' && event.altKey) || (event.code === 'AltLeft' && event.shiftKey)) {
+        toggleLang();
+        restart();
+    };
+
+    if (event.code === 'ShiftLeft' || event.code === 'ShiftRight' || event.code === 'CapsLock') {
+        if (capsLockValue === false) {
+            shiftValue = true;
+        } else {
+            shiftValue = false;
+        };        
+        restart();
+    };
+
+    if (event.code === 'Tab') {
+        event.preventDefault();
+        let start = textarea.selectionStart;
+        let end = textarea.selectionEnd;
+        textarea.value = textarea.value.substring(0, start) + '    ' + textarea.value.substring(end, textarea.value.length);
+    };
+});
+
+
+document.addEventListener('keyup', (event) => {
+    let buttonActive = document.querySelector(`.button__keyboard[data-code=${event.code}]`);
+    buttonActive.classList.remove('active');
+
+    if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
+        shiftValue = false;
+        restart();
+    };
+});
+
+
+document.addEventListener('mousedown', (event) => { 
+    
+    let buttons = document.querySelectorAll('.button__keyboard').forEach(function (element) {
+        element.onclick = function(event) {
+            const textarea = document.querySelector('.textarea');
+            textarea.focus();
+
+            console.log(event);
+            let code = this.getAttribute('data-code');
+            this.classList.add('active');
+            // textarea.value = .innerText;
+        };
+    }); 
+});
+
+document.addEventListener('mouseup', (event) => {
+   
+});
