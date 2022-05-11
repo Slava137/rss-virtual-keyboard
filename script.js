@@ -1,5 +1,5 @@
 import simbols from './simbols.js';
-// alert (`Извините, но я ещё не успел доделать этот таск!!\nПрошу по возможности проверить работу в последний день или\n оставить в комментариях к проверке свой discord для связи. \nКак только я доделаю достаточно функционал, я вам напишу. \nА пока можете расслабиться и выпить чашечку чая :) Заранее спасибо`)
+alert (`Извините, но я ещё не успел всё доделать!!\nПрошу по возможности проверить работу ближе к концу дня:) Заранее спасибо`)
 
 let lang =  localStorage.getItem('lang') || 'en';
 
@@ -24,6 +24,8 @@ container.append(textarea);
 let keyboard = document.createElement('div');
 keyboard.classList.add('keyboard');
 container.append(keyboard);
+let shiftValue = false;
+let capsLockValue = false;
 addButtons();
 
 let manual = document.createElement('p');
@@ -56,9 +58,15 @@ function addButtons() {
 };
 
 function valueButton(i) {
-    if (lang === 'en') {        
+    if (lang === 'en') {  
+        if (shiftValue === true || capsLockValue === true) {
+            return simbols.en[i].shift;
+        };   
         return simbols.en[i].key;
     } else {
+        if (shiftValue === true || capsLockValue === true) {
+            return simbols.ru[i].shift;
+        };  
         return simbols.ru[i].key;
     };
 };
@@ -79,21 +87,63 @@ function restart() {
     };
 };
 
+
 document.addEventListener('keydown', (event) => {
-    const textarea = document.querySelector('textarea');
+    const textarea = document.querySelector('.textarea');
     textarea.focus();
     
-    let buttonActive = document.querySelector(`button[data-code=${event.code}]`);
-    buttonActive.classList.add('active');
-    
+    let buttonActive = document.querySelector(`.button__keyboard[data-code=${event.code}]`);
+    buttonActive.classList.add('active');    
 
     if ((event.code === 'ShiftLeft' && event.altKey) || (event.code === 'AltLeft' && event.shiftKey)) {
         toggleLang();
         restart();
     };
+
+    if (event.code === 'ShiftLeft' || event.code === 'ShiftRight' || event.code === 'CapsLock') {
+        if (capsLockValue === false) {
+            shiftValue = true;
+        } else {
+            shiftValue = false;
+        };        
+        restart();
+    };
+
+    if (event.code === 'Tab') {
+        event.preventDefault();
+        let start = textarea.selectionStart;
+        let end = textarea.selectionEnd;
+        textarea.value = textarea.value.substring(0, start) + '    ' + textarea.value.substring(end, textarea.value.length);
+    };
 });
 
+
 document.addEventListener('keyup', (event) => {
-    let buttonActive = document.querySelector(`button[data-code=${event.code}]`);
+    let buttonActive = document.querySelector(`.button__keyboard[data-code=${event.code}]`);
     buttonActive.classList.remove('active');
+
+    if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
+        shiftValue = false;
+        restart();
+    };
+});
+
+
+document.addEventListener('mousedown', (event) => { 
+    
+    let buttons = document.querySelectorAll('.button__keyboard').forEach(function (element) {
+        element.onclick = function(event) {
+            const textarea = document.querySelector('.textarea');
+            textarea.focus();
+
+            console.log(event);
+            let code = this.getAttribute('data-code');
+            this.classList.add('active');
+            // textarea.value = .innerText;
+        };
+    }); 
+});
+
+document.addEventListener('mouseup', (event) => {
+   
 });
