@@ -39,7 +39,8 @@ container.append(remark);
 function addButtons() {
     for (let i = 0; i < simbols.en.length; i++) {        
         let button = document.createElement('button');
-        button.classList.add('button__keyboard');     
+        button.classList.add('button__keyboard');  
+        button.setAttribute('data-code', simbols.en[i].code);   
         button.innerHTML = valueButton(i);
 
         if (button.innerHTML === 'Backspace' || button.innerHTML === 'CapsLock' || button.innerHTML === 'Tab' || button.innerHTML === 'Enter' ||  button.innerHTML === 'Shift' ||  button.innerHTML === 'Ctrl' ) {
@@ -81,10 +82,18 @@ function restart() {
 document.addEventListener('keydown', (event) => {
     const textarea = document.querySelector('textarea');
     textarea.focus();
+    
+    let buttonActive = document.querySelector(`button[data-code=${event.code}]`);
+    buttonActive.classList.add('active');
+    
 
-    const buttons = document.querySelector('keyboard');
     if ((event.code === 'ShiftLeft' && event.altKey) || (event.code === 'AltLeft' && event.shiftKey)) {
         toggleLang();
         restart();
     };
+});
+
+document.addEventListener('keyup', (event) => {
+    let buttonActive = document.querySelector(`button[data-code=${event.code}]`);
+    buttonActive.classList.remove('active');
 });

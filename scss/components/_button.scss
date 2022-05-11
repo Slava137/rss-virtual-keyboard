@@ -11,6 +11,7 @@
     font-size: 1.5rem;
     line-height: 1.6rem;
     font-weight: 400;
+    cursor: pointer;
 
     &_wide {
         width: 88px;
@@ -29,4 +30,6 @@
     background-color: $color-active;
     color: $color-black;
     font-weight: 700;
+    transform: translateY(3px);
+    transition: .2s;
 }
