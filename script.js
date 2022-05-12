@@ -1,5 +1,4 @@
 import simbols from './simbols.js';
-alert (`Извините, но я ещё не успел всё доделать!!\nПрошу по возможности проверить работу ближе к концу дня:) Заранее спасибо`)
 
 let lang =  localStorage.getItem('lang') || 'en';
 
@@ -47,7 +46,7 @@ function addButtons() {
 
         if (button.innerHTML === 'Backspace' || button.innerHTML === 'CapsLock' || button.innerHTML === 'Tab' || button.innerHTML === 'Enter' ||  button.innerHTML === 'Shift' ||  button.innerHTML === 'Ctrl' ) {
             button.classList.add('button__keyboard_wide');
-        } else if (simbols.en[i].class === 'button__space') {
+        } else if (simbols.en[i].code === 'Space') {
             button.classList.add('button__keyboard_extra-wide');
         } else if (button.innerHTML === 'Del') {
             button.classList.add('button__keyboard_delete');
@@ -129,21 +128,42 @@ document.addEventListener('keyup', (event) => {
 });
 
 
-document.addEventListener('mousedown', (event) => { 
-    
+document.addEventListener('mousedown', (event) => {     
     let buttons = document.querySelectorAll('.button__keyboard').forEach(function (element) {
         element.onclick = function(event) {
             const textarea = document.querySelector('.textarea');
             textarea.focus();
 
-            console.log(event);
             let code = this.getAttribute('data-code');
             this.classList.add('active');
-            // textarea.value = .innerText;
+            
+            let start = textarea.selectionStart;
+            let end = textarea.selectionEnd;
+            textarea.value = textarea.value.substring(0, start) + element.innerText + textarea.value.substring(end, textarea.value.length);
+            console.log(event)
+            if (code === 'ShiftLeft' || code === 'ShiftRight' || code === 'CapsLock') {
+                if (capsLockValue === false) {
+                    shiftValue = true;
+                } else {
+                    shiftValue = false;
+                };        
+                restart();
+            };
+        
+            // if (event.code === 'Tab') {
+            //     event.preventDefault();
+            //     let start = textarea.selectionStart;
+            //     let end = textarea.selectionEnd;
+            //     textarea.value = textarea.value.substring(0, start) + '    ' + textarea.value.substring(end, textarea.value.length);
+            // };
         };
     }); 
 });
 
 document.addEventListener('mouseup', (event) => {
-   
+    let buttons = document.querySelectorAll('.button__keyboard').forEach(function (element) {
+        element.classList.remove('active');
+    });
+    
+
 });
